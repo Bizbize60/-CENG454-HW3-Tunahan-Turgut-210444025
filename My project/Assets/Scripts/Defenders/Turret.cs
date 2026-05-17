@@ -93,4 +93,9 @@ public class Turret : MonoBehaviour
         Gizmos.color = Color.red;
         Gizmos.DrawWireSphere(transform.position, attackRange);
     }
+
+    public void SetBulletPool(BulletPool bulletPool)
+    {
+        bulletPool = pool;
+    }
 }
