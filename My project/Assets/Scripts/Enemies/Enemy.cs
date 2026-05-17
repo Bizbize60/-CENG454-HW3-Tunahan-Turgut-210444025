@@ -23,7 +23,7 @@ public class Enemy : MonoBehaviour
 
     private void Update()
     {
-        if (pathStrategy == null)
+        if (pathStrategy == null || isDestroyed)
         {
             return;
         }
