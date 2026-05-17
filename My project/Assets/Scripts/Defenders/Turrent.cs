@@ -49,6 +49,33 @@ public class Turret : MonoBehaviour
         }
     }
 
+    private void Update() 
+    {
+        if (currentTarget == null)
+        {
+            return;
+        }
+
+        Vector3 directionToTarget = currentTarget.position - transform.position;
+        Quaternion lookRotation = Quaternion.LookRotation(directionToTarget);
+        Vector3 smoothedRotation = Quaternion.Lerp(rotatingHead.rotation, lookRotation, Time.deltaTime * rotationSpeed).eulerAngles;
+        rotatingHead.rotation = Quaternion.Euler(0f, smoothedRotation.y, 0f);
+
+        if (fireTimer <= 0f)
+        {
+            FireProjectile();
+            fireTimer = 1f / fireRate;
+        }
+
+        fireTimer -= Time.deltaTime;
+    }
+
+    private void FireProjectile()
+    {
+        Bullet activeProjectile = bulletPool.GetBullet(projectileSpawnPoint.position, projectileSpawnPoint.rotation);
+        activeProjectile.Seek(currentTarget);
+    }
+
     private void OnDrawGizmosSelected()
     {
         Gizmos.color = Color.red;
