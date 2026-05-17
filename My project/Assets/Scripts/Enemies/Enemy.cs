@@ -13,7 +13,27 @@ public class Enemy : MonoBehaviour
 
     private void OnEnable()
     {
-        // Obje havuzdan (pool) her çekildiğinde stratejiyi baştan başlatır
         pathStrategy?.Initialize(transform);
+    }
+
+    private void Update()
+    {
+        if (pathStrategy == null)
+        {
+            return;
+        }
+
+        bool hasReachedDestination = pathStrategy.Move(transform, moveSpeed);
+
+        if (hasReachedDestination)
+        {
+            EnemyEvents.RaiseEnemyReachedEnd(this);
+            gameObject.SetActive(false);
+        }
+    }
+
+    public void ResetEntity()
+    {
+        pathStrategy?.ResetMovement();
     }
 }
