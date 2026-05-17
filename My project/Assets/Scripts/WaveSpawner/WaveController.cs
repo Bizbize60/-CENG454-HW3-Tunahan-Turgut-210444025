@@ -50,10 +50,13 @@ public class WaveController : MonoBehaviour
     private void OnEnable()
     {
         EnemyEvents.OnEnemyReachedEnd += OnEntityFinishedPath;
+        EnemyEvents.OnEnemyDied += OnEntityFinishedPath;
+
     }
 
     private void OnDisable()
     {
         EnemyEvents.OnEnemyReachedEnd -= OnEntityFinishedPath;
+        EnemyEvents.OnEnemyDied -= OnEntityFinishedPath;
     }
 }
