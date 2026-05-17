@@ -2,8 +2,13 @@ using UnityEngine;
 
 public class Enemy : MonoBehaviour
 {
+    [Header("Stats")]
     public float moveSpeed = 10f;
-
+    public float baseHealth = 100f;
+    
+    private float activeHealth;
+    private bool isDestroyed = false;
+    
     private IEnemyMovementStrategy pathStrategy;
 
     private void Awake()
@@ -34,6 +39,8 @@ public class Enemy : MonoBehaviour
 
     public void ResetEntity()
     {
+        activeHealth = baseHealth;
+        isDestroyed = false;
         pathStrategy?.ResetMovement();
     }
 }
