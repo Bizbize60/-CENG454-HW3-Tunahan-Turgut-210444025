@@ -18,6 +18,37 @@ public class Turret : MonoBehaviour
     [SerializeField] private BulletPool bulletPool;
     public Transform projectileSpawnPoint;
 
+    private void Start() 
+    {
+        InvokeRepeating(nameof(ScanForTargets), 0f, 0.5f);
+    }
+    
+    private void ScanForTargets()
+    {
+        GameObject[] activeEnemies = GameObject.FindGameObjectsWithTag(targetTag);
+        float shortestDistance = Mathf.Infinity;
+        GameObject nearestEnemy = null;
+
+        foreach (GameObject enemy in activeEnemies)
+        {
+            float distanceToEnemy = Vector3.Distance(transform.position, enemy.transform.position);
+            if (distanceToEnemy < shortestDistance)
+            {
+                shortestDistance = distanceToEnemy;
+                nearestEnemy = enemy;
+            }
+        }
+
+        if (nearestEnemy != null && shortestDistance <= attackRange)
+        {
+            currentTarget = nearestEnemy.transform;
+        } 
+        else
+        {
+            currentTarget = null;
+        }
+    }
+
     private void OnDrawGizmosSelected()
     {
         Gizmos.color = Color.red;
