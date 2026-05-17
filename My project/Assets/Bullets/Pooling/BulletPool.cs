@@ -24,4 +24,26 @@ public class BulletPool : MonoBehaviour
         projectileQueue.Enqueue(newProjectile);
         return newProjectile;
     }
+
+    public Bullet GetBullet(Vector3 spawnPos, Quaternion spawnRot)
+    {
+        if (projectileQueue.Count == 0)
+        {
+            InstantiateProjectile();
+        }
+
+        Bullet activeProjectile = projectileQueue.Dequeue();
+
+        activeProjectile.transform.position = spawnPos;
+        activeProjectile.transform.rotation = spawnRot;
+        activeProjectile.gameObject.SetActive(true);
+
+        return activeProjectile;
+    }
+
+    public void ReturnBullet(Bullet returningProjectile)
+    {
+        returningProjectile.gameObject.SetActive(false);
+        projectileQueue.Enqueue(returningProjectile);
+    }
 }
