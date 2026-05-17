@@ -49,4 +49,39 @@ public class Ground : MonoBehaviour {
     {
         meshRenderer.material.color = originalColor;
     }
+
+    void OnMouseDown ()
+    {
+        if (EventSystem.current.IsPointerOverGameObject()) return;
+
+        if (currentTurret != null)
+        {
+            constructionManager.SelectGround(this);
+            return;
+        }
+
+        if (!constructionManager.CanConstruct) return;
+
+        ConstructTurret(constructionManager.GetTurretToConstruct());
+    }
+
+    void ConstructTurret (TurretBlueprint blueprint)
+    {
+        if (PlayerStats.Money < blueprint.cost)
+        {
+            Debug.Log("Not enough money to construct that!");
+            return;
+        }
+
+        PlayerStats.Money -= blueprint.cost;
+
+        GameObject _turret = Instantiate(blueprint.prefab, GetConstructionPosition(), Quaternion.identity);
+        currentTurret = _turret;
+        currentBlueprint = blueprint;
+
+        GameObject effect = Instantiate(constructionManager.constructionEffect, GetConstructionPosition(), Quaternion.identity);
+        Destroy(effect, 5f);
+
+        Debug.Log("Turret constructed!");
+    }
 }
