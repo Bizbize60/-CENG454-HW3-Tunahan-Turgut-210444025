@@ -3,20 +3,25 @@ using System.Collections;
 
 public class WaveController : MonoBehaviour
 {
-    [SerializeField] private EnemyPool monsterPool;
+    [SerializeField] private EnemyPool armoredPool;
+    [SerializeField] private EnemyPool lightweightPool;
     [SerializeField] private Transform spawnOrigin;
-    
+
     [SerializeField] private float waveInterval = 7.5f;
-    [SerializeField] private float spawnInterval = 0.3f; 
-    
+    [SerializeField] private float spawnInterval = 0.3f;
+
+    [Header("Spawn Ratios")]
+    [Range(0f, 1f)]
+    [SerializeField] private float armoredSpawnChance = 0.3f;
+
     private float currentTimer = 4f;
-    private int currentWave = 0; 
+    private int currentWave = 0;
 
     private IEnumerator GenerateWave()
     {
         currentWave++;
         WaveEvents.RaiseWaveStarted(currentWave);
-        
+
         for (int i = 0; i < currentWave; i++)
         {
             InstantiateEntity();
@@ -31,27 +36,32 @@ public class WaveController : MonoBehaviour
             StartCoroutine(GenerateWave());
             currentTimer = waveInterval;
         }
-        
+
         currentTimer -= Time.deltaTime;
         WaveEvents.RaiseCountdownChanged(currentTimer);
     }
 
     private void InstantiateEntity()
     {
-        IEnemy monster = monsterPool.GetEnemy(spawnOrigin.position, spawnOrigin.rotation);
+        bool spawnArmored = Random.value < armoredSpawnChance;
+        EnemyPool selectedPool = spawnArmored ? armoredPool : lightweightPool;
+
+        Enemy monster = selectedPool.GetEnemy(spawnOrigin.position, spawnOrigin.rotation);
         WaveEvents.RaiseEnemySpawned(monster);
     }
 
-    private void OnEntityFinishedPath(IEnemy monster)
+    private void OnEntityFinishedPath(Enemy monster)
     {
-        monsterPool.ReturnEnemy(monster);
+        if (monster is ArmoredEnemy)
+            armoredPool.ReturnEnemy(monster);
+        else
+            lightweightPool.ReturnEnemy(monster);
     }
 
     private void OnEnable()
     {
         EnemyEvents.OnEnemyReachedEnd += OnEntityFinishedPath;
-        EnemyEvents.OnEnemyDied += OnEntityFinishedPath;    
-
+        EnemyEvents.OnEnemyDied += OnEntityFinishedPath;
     }
 
     private void OnDisable()
