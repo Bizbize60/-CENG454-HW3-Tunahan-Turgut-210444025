@@ -39,6 +39,35 @@ public class Bullet : MonoBehaviour
         transform.Translate(directionToTarget.normalized * frameTravelDistance, Space.World);
     }
 
-    private void TriggerImpact() { }
-    private void ReleaseToPool() { } 
+    private void TriggerImpact()
+    {
+        if (hitVFX != null)
+        {
+            GameObject vfxInstance = Instantiate(hitVFX, transform.position, transform.rotation);
+            Destroy(vfxInstance, 1.5f); 
+        }
+        
+        
+        Enemy targetEnemy = currentTarget.GetComponent<Enemy>();
+        if (targetEnemy != null)
+        {
+            targetEnemy.TakeDamage(impactDamage);
+        }
+
+        ReleaseToPool();
+    }
+
+    private void ReleaseToPool()
+    {
+        currentTarget = null;
+        
+        if (assignedPool != null)
+        {
+            assignedPool.ReturnBullet(this);
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
+    }
 }
