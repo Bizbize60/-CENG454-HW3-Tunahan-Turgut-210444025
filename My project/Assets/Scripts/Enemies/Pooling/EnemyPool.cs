@@ -3,10 +3,10 @@ using UnityEngine;
 
 public class EnemyPool : MonoBehaviour
 {
-    [SerializeField] private Enemy entityPrefab;
+    [SerializeField] private IEnemy entityPrefab;
     [SerializeField] private int startupPoolCapacity = 15;
 
-    private readonly Queue<Enemy> entityQueue = new Queue<Enemy>();
+    private readonly Queue<IEnemy> entityQueue = new Queue<IEnemy>();
 
     private void Awake()
     {
@@ -18,21 +18,21 @@ public class EnemyPool : MonoBehaviour
 
     private Enemy InstantiateNewEntity()
     {
-        Enemy newEntity = Instantiate(entityPrefab, transform);
+        IEnemy newEntity = Instantiate(entityPrefab, transform);
         newEntity.gameObject.SetActive(false);
         entityQueue.Enqueue(newEntity);
         return newEntity;
     }
 
     
-    public Enemy GetEnemy(Vector3 spawnPosition, Quaternion spawnRotation)
+    public IEnemy GetEnemy(Vector3 spawnPosition, Quaternion spawnRotation)
     {
         if (entityQueue.Count == 0)
         {
             InstantiateNewEntity();
         }
 
-        Enemy activeEntity = entityQueue.Dequeue();
+        IEnemy activeEntity = entityQueue.Dequeue();
 
         activeEntity.transform.position = spawnPosition;
         activeEntity.transform.rotation = spawnRotation;
@@ -43,7 +43,7 @@ public class EnemyPool : MonoBehaviour
         return activeEntity;
     }
 
-    public void ReturnEnemy(Enemy returningEntity)
+    public void ReturnEnemy(IEnemy returningEntity)
     {
         returningEntity.gameObject.SetActive(false);
         entityQueue.Enqueue(returningEntity);
