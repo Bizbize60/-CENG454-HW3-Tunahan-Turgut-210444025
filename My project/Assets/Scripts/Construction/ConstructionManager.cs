@@ -1,50 +1,46 @@
 using UnityEngine;
 
-public class ConstructionManager : MonoBehaviour {
-
+public class ConstructionManager : MonoBehaviour
+{
     public static ConstructionManager instance;
 
-    void Awake() { /* Singleton Kontrolü */ }
+    public GameObject standardTurretPrefab;
+    [SerializeField] private BulletPool projectilePool;
 
-    public GameObject constructionEffect;
-    public GameObject liquidationEffect;
+    private GameObject turretToConstruct;
 
-    private TurretBlueprint turretToConstruct;
-    private Ground selectedGround;
-
-    public GroundUI groundUI;
-
-    public bool CanConstruct { get { return turretToConstruct != null; } }
-    public bool HasRequiredFunds { get { return PlayerStats.Money >= turretToConstruct.cost; } }
-
-    public void SelectGround(Ground ground)
+    void Awake()
     {
-        if (selectedGround == ground)
+        if (instance != null)
         {
-            DeselectGround();
+            Debug.LogWarning("More than one ConstructionManager in scene!");
             return;
         }
-
-        selectedGround = ground;
-        turretToConstruct = null;
-
-        groundUI.SetTarget(ground);
+        instance = this;
     }
 
-    public void DeselectGround()
+    void Start()
     {
-        selectedGround = null;
-        groundUI.Hide();
+        turretToConstruct = standardTurretPrefab;
     }
 
-    public void SelectTurretToConstruct(TurretBlueprint turret)
-    {
-        turretToConstruct = turret;
-        DeselectGround();
-    }
-
-    public TurretBlueprint GetTurretToConstruct()
+    public GameObject GetTurretToConstruct()
     {
         return turretToConstruct;
+    }
+
+    public GameObject ConstructTurret(Vector3 spawnPosition, Quaternion spawnRotation)
+    {
+        // Tareti sahneye yerleştirir
+        GameObject turretInstance = Instantiate(turretToConstruct, spawnPosition, spawnRotation);
+
+        // Taret bileşenine erişip mermi havuzunu (pool) bağlar
+        Turret turretScript = turretInstance.GetComponent<Turret>();
+        if (turretScript != null)
+        {
+            turretScript.SetBulletPool(projectilePool);
+        }
+
+        return turretInstance;
     }
 }
