@@ -15,4 +15,8 @@ public class WaveController : MonoBehaviour
         
         currentTimer -= Time.deltaTime;
     }
+    private void InstantiateEntity()
+    {
+        Enemy monster = monsterPool.GetEnemy(spawnOrigin.position, spawnOrigin.rotation);
+    }
 }
