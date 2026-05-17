@@ -8,4 +8,9 @@ public static class EnemyEvents
     {
         OnEnemyReachedEnd?.Invoke(targetEntity);
     }
+
+    public static void RaiseEnemyDied(Enemy enemy)
+    {
+        OnEnemyDied?.Invoke(enemy);
+    }
 }
