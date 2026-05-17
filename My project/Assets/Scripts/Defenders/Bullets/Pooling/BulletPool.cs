@@ -18,7 +18,13 @@ public class BulletPool : MonoBehaviour
 
     private Bullet InstantiateProjectile()
     {
+
         Bullet newProjectile = Instantiate(projectilePrefab, transform);
+        if (projectilePrefab == null)
+    {
+        Debug.LogError("BulletPool Hatası: Kopyalanacak mermi prefab'ı atanmamış!");
+        return null;
+    }
         newProjectile.gameObject.SetActive(false);
         newProjectile.SetPool(this);
         projectileQueue.Enqueue(newProjectile);

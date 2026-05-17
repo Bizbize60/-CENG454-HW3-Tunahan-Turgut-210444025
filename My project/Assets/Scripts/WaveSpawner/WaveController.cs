@@ -38,11 +38,11 @@ public class WaveController : MonoBehaviour
 
     private void InstantiateEntity()
     {
-        Enemy monster = monsterPool.GetEnemy(spawnOrigin.position, spawnOrigin.rotation);
+        IEnemy monster = monsterPool.GetEnemy(spawnOrigin.position, spawnOrigin.rotation);
         WaveEvents.RaiseEnemySpawned(monster);
     }
 
-    private void OnEntityFinishedPath(Enemy monster)
+    private void OnEntityFinishedPath(IEnemy monster)
     {
         monsterPool.ReturnEnemy(monster);
     }
