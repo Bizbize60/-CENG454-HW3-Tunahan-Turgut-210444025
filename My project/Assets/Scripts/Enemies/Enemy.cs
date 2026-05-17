@@ -43,4 +43,28 @@ public class Enemy : MonoBehaviour
         isDestroyed = false;
         pathStrategy?.ResetMovement();
     }
+
+
+    public void TakeDamage(float damageTaken)
+    {
+        if (isDestroyed)
+        {
+            return;
+        }
+        
+        activeHealth -= damageTaken;
+        
+        if (activeHealth <= 0f)
+        {
+            ExecuteDeath();
+        }
+    }
+
+
+    private void ExecuteDeath()
+    {
+        isDestroyed = true;
+        EnemyEvents.RaiseEnemyDied(this);
+        gameObject.SetActive(false);
+    }
 }
