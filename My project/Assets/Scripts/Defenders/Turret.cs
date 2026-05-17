@@ -96,6 +96,6 @@ public class Turret : MonoBehaviour
 
     public void SetBulletPool(BulletPool bulletPool)
     {
-        bulletPool = pool;
+        this.bulletPool = bulletPool;
     }
 }
