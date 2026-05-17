@@ -1,4 +1,6 @@
 using UnityEngine;
+using System.Collections;
+using System.Collections.Generic; 
 
 public class Turret : MonoBehaviour 
 {
@@ -18,6 +20,13 @@ public class Turret : MonoBehaviour
     [SerializeField] private BulletPool bulletPool;
     public Transform projectileSpawnPoint;
 
+    private ITargetingStrategy targetingStrategy;
+
+    private void Awake()
+    {
+        targetingStrategy = GetComponent<ITargetingStrategy>();
+    }
+
     private void Start() 
     {
         InvokeRepeating(nameof(ScanForTargets), 0f, 0.5f);
@@ -25,34 +34,37 @@ public class Turret : MonoBehaviour
     
     private void ScanForTargets()
     {
-        GameObject[] activeEnemies = GameObject.FindGameObjectsWithTag(targetTag);
-        float shortestDistance = Mathf.Infinity;
-        GameObject nearestEnemy = null;
-
-        foreach (GameObject enemy in activeEnemies)
+        if (targetingStrategy == null)
         {
-            float distanceToEnemy = Vector3.Distance(transform.position, enemy.transform.position);
-            if (distanceToEnemy < shortestDistance)
+            currentTarget = null;
+            return;
+        }
+
+        GameObject[] enemyObjects = GameObject.FindGameObjectsWithTag(targetTag);
+        List<Enemy> validEnemies = new List<Enemy>();
+
+        foreach (GameObject go in enemyObjects)
+        {
+            Enemy enemy = go.GetComponent<Enemy>();
+            if (enemy != null) 
             {
-                shortestDistance = distanceToEnemy;
-                nearestEnemy = enemy;
+                validEnemies.Add(enemy);
             }
         }
 
-        if (nearestEnemy != null && shortestDistance <= attackRange)
-        {
-            currentTarget = nearestEnemy.transform;
-        } 
-        else
-        {
-            currentTarget = null;
-        }
+        currentTarget = targetingStrategy.FindTarget(transform.position, attackRange, validEnemies);
     }
 
     private void Update() 
     {
         if (currentTarget == null)
         {
+            return;
+        }
+
+        if (!currentTarget.gameObject.activeInHierarchy)
+        {
+            currentTarget = null;
             return;
         }
 
