@@ -15,6 +15,7 @@ public class WaveController : MonoBehaviour
     private IEnumerator GenerateWave()
     {
         currentWave++;
+        WaveEvents.RaiseWaveStarted(currentWave);
         
         for (int i = 0; i < currentWave; i++)
         {
@@ -22,7 +23,6 @@ public class WaveController : MonoBehaviour
             yield return new WaitForSeconds(spawnInterval);
         }
     }
-
 
     private void Update()
     {
@@ -33,10 +33,26 @@ public class WaveController : MonoBehaviour
         }
         
         currentTimer -= Time.deltaTime;
+        WaveEvents.RaiseCountdownChanged(currentTimer);
     }
 
     private void InstantiateEntity()
     {
         Enemy monster = monsterPool.GetEnemy(spawnOrigin.position, spawnOrigin.rotation);
+        WaveEvents.RaiseEnemySpawned(monster);
+    }
+    private void OnEntityFinishedPath(Enemy monster)
+    {
+        monsterPool.ReturnEnemy(monster);
+    }
+
+    private void OnEnable()
+    {
+        EnemyEvents.OnEnemyReachedEnd += OnEntityFinishedPath;
+    }
+
+    private void OnDisable()
+    {
+        EnemyEvents.OnEnemyReachedEnd -= OnEntityFinishedPath;
     }
 }
